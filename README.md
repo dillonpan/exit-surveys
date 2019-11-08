@@ -6,8 +6,8 @@ For this project, we will take a look at employee exit surveys from two departme
 - Department of Education, Training and Employment (DETE)  
 - Technical and Further Education (TAFE)  
 
-Our main objective is to answer the following questions:
-- Are employees who only worked for the institutes for a short period of time resigning due to some kind of dissatisfaction?  
+Our main objective is to answer the following questions for both departments:
+- Did employees who worked a for short period of time resign due to some kind of dissatisfaction?  
 - What about employees who have been there longer?
 
 # Note: Please replace [directory] below in the open() function with the link to your folder of choice where autos.csv is located
@@ -124,4 +124,59 @@ Index(['id', 'Institute', 'WorkArea', 'cease_date', 'separationtype',
        'age', 'employment_status', 'position', 'institute_service',  
        'role_service'],  
       dtype='object')  
+
+# Filter The Data
+In the beginning of this project, we specified that we wanted to analyze dissatisfaction on employees who retired. Let's see if there's a way to filter by those who resigned.
+
+```python
+dete_survey_updated['separationtype'].value_counts()
+```
+Age Retirement                          285
+Resignation-Other reasons               150
+Resignation-Other employer               91
+Resignation-Move overseas/interstate     70
+Voluntary Early Retirement (VER)         67
+Ill Health Retirement                    61
+Other                                    49
+Contract Expired                         34
+Termination                              15
+Name: separationtype, dtype: int64
+
+While it's easy to tell which values represent resignation, we do see that there's three different types of resignation. We will have to find a way to make sure we get all three types when filtering.
+
+```python
+tafe_survey_updated['separationtype'].value_counts()
+```
+Resignation                 340
+Contract Expired            127
+Retrenchment/ Redundancy    104
+Retirement                   82
+Transfer                     25
+Termination                  23
+Name: separationtype, dtype: int64
+
+This dataset is much easier to filter as there just one type of value we need to worry about, "Resignation". Thus we do not need to do much for the tafe_survey_updated dataset, but lets fix the dete_survey_updated dataset to match it. One way is to filter out those cells with the word "Resignation" in them then replace it with the actual word, "Resignation".
+
+```python
+dete_survey_updated[dete_survey_updated['separationtype'].str.contains('Resignation'), 'separationtype'] = 'Resignation'
+
+dete_survey_updated['separationtype'].value_counts()
+```
+Resignation                         311  
+Age Retirement                      285  
+Voluntary Early Retirement (VER)     67  
+Ill Health Retirement                61  
+Other                                49  
+Contract Expired                     34  
+Termination                          15  
+Name: separationtype, dtype: int64  
+
+Perfect, all three types of resignation were replaced and consolidated under "Resignation". Now we can filter both datasets and remove all the non-resignation rows.
+
+# Select only the resignation separation types from each dataframe
+
+```python
+dete_resignations = dete_survey_updated[dete_survey_updated['separationtype'] == 'Resignation'].copy()
+tafe_resignations = tafe_survey_updated[tafe_survey_updated['separationtype'] == 'Resignation'].copy()
+'''
 

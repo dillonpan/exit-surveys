@@ -126,7 +126,9 @@ Index(['id', 'Institute', 'WorkArea', 'cease_date', 'separationtype',
        'role_service'],  
       dtype='object')  
 
-# Filter The Data
+# Filter and Clean the Data
+
+# Part1: Seperating Resignations From the Rest
 In the beginning of this project, we specified that we wanted to analyze dissatisfaction on employees who retired. Let's see if there's a way to filter by those who resigned.
 
 ```python
@@ -172,12 +174,115 @@ Contract Expired                     34
 Termination                          15  
 Name: separationtype, dtype: int64  
 
-Perfect, all three types of resignation were replaced and consolidated under "Resignation". Now we can filter both datasets and remove all the non-resignation rows.
-
-# Select only the resignation separation types from each dataframe
+Perfect, all three types of resignation were replaced and consolidated under "Resignation". Now we can filter both datasets and remove all the non-resignation rows:
 
 ```python
 dete_resignations = dete_survey_updated[dete_survey_updated['separationtype'] == 'Resignation'].copy()
 tafe_resignations = tafe_survey_updated[tafe_survey_updated['separationtype'] == 'Resignation'].copy()
 ```
+
+# Part2: Cleaning Dates and Creating a New Column
+
+Now that we a two datasets of only resignations, we need to find out how long each employee worked before resigning. Afterwards, we can allocated whether they were a short term or long term employee. In tafe_resignations, the column "institute_service" has the amount of time the employee was with the department. However, dete_resignations only includes the employee's start date ("dete_start_date") and their end date ("cease_date"). So let's create a new column that holds the difference.
+
+First off, we'll take a look at the end date:
+```python
+dete_resignations['cease_date'].value_counts()
+```
+2012       126  
+2013        74  
+01/2014     22  
+12/2013     17  
+06/2013     14  
+09/2013     11  
+11/2013      9  
+07/2013      9  
+10/2013      6  
+08/2013      4  
+05/2013      2  
+05/2012      2  
+09/2010      1  
+07/2006      1  
+07/2012      1  
+2010         1  
+Name: cease_date, dtype: int64  
+
+So we need to remove the month on some of these dates. Unlike before though, we can't replace all of those values with one thing. The below code only keeps the 2nd half (year) after splitting the date. In this situation, we cannot convert to int easily but we can to float:
+```python
+dete_resignations['cease_date'] = dete_resignations['cease_date'].str.split('/').str[-1]
+dete_resignations['cease_date'] = dete_resignations['cease_date'].astype("float")
+```
+
+Let's run the value count again:
+
+```python
+dete_resignations['cease_date'].value_counts()
+```
+2013.0    146  
+2012.0    129  
+2014.0     22  
+2010.0      2  
+2006.0      1  
+Name: cease_date, dtype: int64  
+
+Now that the end date is taken care of, we can look at the start date:
+```python
+dete_resignations['dete_start_date'].value_counts()
+```
+2011.0    24  
+2008.0    22  
+2007.0    21  
+2012.0    21  
+2010.0    17  
+2005.0    15  
+2004.0    14  
+2009.0    13  
+2006.0    13  
+2013.0    10  
+2000.0     9  
+1999.0     8  
+1996.0     6  
+2002.0     6  
+1992.0     6  
+1998.0     6  
+2003.0     6  
+1994.0     6  
+1993.0     5  
+1990.0     5  
+1980.0     5  
+1997.0     5  
+1991.0     4  
+1989.0     4  
+1988.0     4  
+1995.0     4  
+2001.0     3  
+1985.0     3  
+1986.0     3  
+1983.0     2  
+1976.0     2  
+1974.0     2  
+1971.0     1  
+1972.0     1  
+1984.0     1  
+1982.0     1  
+1987.0     1  
+1975.0     1  
+1973.0     1  
+1977.0     1  
+1963.0     1  
+Name: dete_start_date, dtype: int64  
+
+Start dates look good so we can now create a new column that has the difference. We will name the column "institute_service" to match the column with the same name in tafe_resignations.
+
+```python
+dete_resignations['institute_service'] = dete_resignations['cease_date'] - dete_resignations['dete_start_date']
+
+print(dete_resignations['institute_service'].head())
+```
+3      7.0  
+5     18.0  
+8      3.0  
+9     15.0  
+11     3.0  
+Name: institute_service, dtype: float64  
 

@@ -272,7 +272,7 @@ dete_resignations['dete_start_date'].value_counts()
 1963.0     1  
 Name: dete_start_date, dtype: int64  
 
-Start dates look good so we can now create a new column that has the difference. We will name the column "institute_service" to match the column with the same name in tafe_resignations.
+Start date looks good so we can now create a new column that has the difference. We will name the column "institute_service" to match the column with the same name in tafe_resignations.
 
 ```python
 dete_resignations['institute_service'] = dete_resignations['cease_date'] - dete_resignations['dete_start_date']
@@ -286,3 +286,82 @@ print(dete_resignations['institute_service'].head())
 11     3.0  
 Name: institute_service, dtype: float64  
 
+Now that we have our finished new column, we can move on to 
+
+# Part3: Identifying Dissatisfied Employees
+For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the the following are the important ones to identify dissatisfaction:
+
+tafe_survey_updated:
+- Contributing Factors. Dissatisfaction
+- Contributing Factors. Job Dissatisfaction
+dafe_survey_updated:
+- job_dissatisfaction
+- dissatisfaction_with_the_department
+- physical_work_environment
+- lack_of_recognition
+- lack_of_job_security
+- work_location
+- employment_conditions
+- work_life_balance
+- workload
+
+We can use value_counts() on each of these headers to see what values are in them. I've gone ahead and done that. Looks like the results for each column in their respective dataset resulted in the exact same values.  
+
+Thus, I will just provide two columns below as examples:
+```python
+print(tafe_resignations['Contributing Factors. Dissatisfaction'].value_counts(dropna=False))
+
+print(dete_resignations['job_dissatisfaction'].value_counts(dropna=False))
+```
+
+-                                         277  
+Contributing Factors. Dissatisfaction      55  
+NaN                                         8
+Name: Contributing Factors. Dissatisfaction, dtype: int64  
+
+
+False    270  
+True      41  
+Name: job_dissatisfaction, dtype: int64  
+
+In job_dissatisfaction, we have a bunch of columns with true/false listed as values. We can go row by row and see if any of the columns listed above contain "True" as a value for that row. As long as one does for that row, it confirms the employee resigned due to some form of dissatisfaction. We can create a new column that contains a final "True" value, or "False" if none of the columns had a "True" value.
+
+We can do the same with tafe_resignations, we just need to first conert the current values to either "True" or "False". Let's go ahead and do that. We can also create the new column ("dissatisfied") and include the final True/False value in it under the same code:
+```python
+def update_vals(x):
+    if x == '-':
+        return False
+    elif pandas.isnull(x):
+        return numpy.nan
+    else:
+        return True
+
+# When going through each row, we run both columns through the update_vals() function.
+# If either value comes back "True", we send "True" to the new column
+tafe_resignations['dissatisfied'] = tafe_resignations[['Contributing Factors. Dissatisfaction', 'Contributing Factors. Job Dissatisfaction']].applymap(update_vals).any(axis=1, skipna=False)
+
+tafe_resignations_up = tafe_resignations.copy()
+print(tafe_resignations_up['dissatisfied'].value_counts(dropna=False))
+```
+False    241  
+True      91  
+NaN        8  
+Name: dissatisfied, dtype: int64  
+
+Now we can also use the .any() function on dete_resignations and create the same new column, "dissatisfied":
+```python
+dete_resignations['dissatisfied'] = dete_resignations[['job_dissatisfaction',
+       'dissatisfaction_with_the_department', 'physical_work_environment',
+       'lack_of_recognition', 'lack_of_job_security', 'work_location',
+       'employment_conditions', 'work_life_balance',
+       'workload']].any(1, skipna=False)
+       
+dete_resignations_up = dete_resignations.copy()
+print(dete_resignations_up['dissatisfied'].value_counts(dropna=False))
+```
+
+False    162  
+True     149  
+Name: dissatisfied, dtype: int64  
+
+# Combining the Data

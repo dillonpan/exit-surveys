@@ -14,18 +14,19 @@ Our main objective is to answer the following questions:
 
 # Opening and Exploring the Data:
 ```python
-import pandas as pd
-import numpy as np
-dete_survey = pd.read_csv('[directory].dete_survey.csv')
+import pandas
+import numpy
+dete_survey = pandas.read_csv('[directory].dete_survey.csv')
 print(dete_survey.head(1))
 print(dete_survey.info())
 ```
+
    ID         SeparationType Cease Date  ... South Sea Disability NESB  
 0   1  Ill Health Retirement    08/2012  ...       NaN        NaN  Yes  
 
 
-RangeIndex: 822 entries, 0 to 821
-Data columns (total 56 columns):
+RangeIndex: 822 entries, 0 to 821  
+Data columns (total 56 columns):  
 ID                                     822 non-null int64  
 SeparationType                         822 non-null object  
 Cease Date                             822 non-null object  

@@ -301,6 +301,24 @@ NaN                   50
 More than 20 years    10  
 Name: institute_service, dtype: int64  
 
+Looks like the main issue is that the service times listed are in some form of a range. To fix this, we will filter out and take the lower number of the range or the only number in the case of "less than 1" and "more than 20". Losing the higher number of the range won't make much of a difference when we categorize the numbers later on.  
+
+Unlike before, we can't just split or overwrite the values with the same value. This time, we'll use regex to grab the first digit(s) that comes up in each value. Then we will turn it in to a string value, matching the "institute_service" column in dete_resignations:
+```python
+tafe_resignations['institute_service'] = tafe_resignations['institute_service'].astype('str').str.extract(r'(\d+)')
+tafe_resignations['institute_service'] = tafe_resignations['institute_service'].astype('float')
+
+print(tafe_resignations['institute_service'].value_counts(dropna=False))
+```
+1.0     137
+3.0      63
+NaN      50
+5.0      33
+11.0     26
+7.0      21
+20.0     10
+Name: institute_service, dtype: int64
+
 # Part3: Identifying Dissatisfied Employees
 For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the the following are the important ones to identify dissatisfaction:
 
@@ -350,6 +368,7 @@ def update_vals(x):
     else:
         return True
 
+
 # When going through each row, we run both columns through the update_vals() function.
 # If either value comes back "True", we send "True" to the new column
 tafe_resignations['dissatisfied'] = tafe_resignations[['Contributing Factors. Dissatisfaction', 'Contributing Factors. Job Dissatisfaction']].applymap(update_vals).any(axis=1, skipna=False)
@@ -396,16 +415,82 @@ combined_updated = combined.dropna(thresh=500, axis=1).copy()
 ```
 
 # Categorizing as Short Term or Long Term
-There is no official definition on what constitutes short term vs long term, so we're going to use the following guidelines taken from [this article](https://www.businesswire.com/news/home/20171108006002/en/Age-Number-Engage-Employees-Career-Stage). This article includes some details on how career stages may affect employees needs and thus sattisfaction. This could assist in detailing what changes the departments should consider to improve employee morale. The article breaks down career stages to the following values:  
+There is no official definition on what constitutes short term vs long term, so we're going to use the following guidelines taken from [this article](https://www.businesswire.com/news/home/20171108006002/en/Age-Number-Engage-Employees-Career-Stage). This article includes some details on how career stages may affect employees needs and thus satisfaction. This could assist in detailing what changes the departments should consider to improve employee morale. The article breaks down career stages to the following values:  
 
 - New: Less than 3 years in the workplace  
 - Experienced: 3-6 years in the workplace  
 - Established: 7-10 years in the workplace  
 - Veteran: 11 or more years in the workplace  
 
-So we now have a combined database and a column filled with True/False values that confirm whether or not the ex-employee resigned due to some formm of dissatisfaction. So the last step we need to take is to categorize the vlues in 'institute_service' column.  
+So we now have a combined database, a column filled with True/False values that confirm whether or not the ex-employee resigned due to some formm of dissatisfaction, and a column with an approximation of how long he employee was with the department (in years). 
 
-Let's take a look at that column in the combined dataset:
+Lets take a look at the :
 ```python
-print(dete_resignations_up['dissatisfied'].value_counts(dropna=False))
+def transform_service(val):
+    if val >= 11:
+        return "Veteran"
+    elif 7 <= val < 11:
+        return "Established"
+    elif 3 <= val < 7:
+        return "Experienced"
+    elif pandas.isnull(val):
+        return numpy.nan
+    else:
+        return "New"
+
+
+combined_updated['service_cat'] = combined_updated['institute_service'].apply(transform_service)
+
+print(combined_updated['service_cat'].value_counts())
 ```
+
+New            193  
+Experienced    172  
+Veteran        136  
+Established     62  
+Name: service_cat, dtype: int64  
+
+# Analysis
+Now that we have consolidated all the information we need, we can analyze each "service_cat" and check the percentage of how many in each group resigned due to dissatisfaction.
+
+```python
+print(combined_updated.loc[combined_updated['service_cat'] == 'Established', 'dissatisfied'].value_counts(normalize=True))
+```
+True     0.516129  
+False    0.483871  
+Name: dissatisfied, dtype: float64  
+
+We could do the above for each the other "service_cat" or we can do it all at once using a Pivot Table. The only issue with uing a Pivot Table is that the values we're using ("dissatisfied") includes NaN/Null values. Pivot tables read boolean values as True=1 and False=0, NaN values would cause an error.
+```python
+combined_updated['dissatisfied'].value_counts(dropna=False)
+```
+False    403  
+True     240  
+NaN        8  
+Name: dissatisfied, dtype: int64  
+
+Since only 8 rows have a NaN/Null value in the "dissatisfied" column, we can just overwrite them to the more common response, False:
+```python
+combined_updated['dissatisfied'] = combined_updated['dissatisfied'].fillna(False)
+```
+
+Now we can create our pivot table:
+```python
+dis_pct = combined_updated.pivot_table(index='service_cat', values='dissatisfied', aggfunc='mean')
+
+print(dis_pct)
+````
+_              dissatisfied  
+service_cat                
+Established      0.516129  
+Experienced      0.343023  
+New              0.295337  
+Veteran          0.485294  
+
+Lastly, we can plot the data to better visualize it:
+
+import matplotlib.pyplot
+
+dis_pct.plot(kind='bar', rot=30)
+
+matplotlib.pyplot.show()

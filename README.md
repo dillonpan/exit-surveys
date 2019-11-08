@@ -158,7 +158,7 @@ Name: separationtype, dtype: int64
 This dataset is much easier to filter as there just one type of value we need to worry about, "Resignation". Thus we do not need to do much for the tafe_survey_updated dataset, but lets fix the dete_survey_updated dataset to match it. One way is to filter out those cells with the word "Resignation" in them then replace it with the actual word, "Resignation".
 
 ```python
-dete_survey_updated[dete_survey_updated['separationtype'].str.contains('Resignation'), 'separationtype'] = 'Resignation'
+dete_survey_updated.loc[dete_survey_updated['separationtype'].str.contains('Resignation'), 'separationtype'] = 'Resignation'
 
 dete_survey_updated['separationtype'].value_counts()
 ```

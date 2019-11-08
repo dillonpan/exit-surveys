@@ -39,4 +39,3 @@ tafe_survey.head()
 
 [3 rows x 72 columns]
 
-

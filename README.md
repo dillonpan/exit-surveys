@@ -488,9 +488,15 @@ New              0.295337
 Veteran          0.485294  
 
 Lastly, we can plot the data to better visualize it:
-
+```python
 import matplotlib.pyplot
 
-dis_pct.plot(kind='bar', rot=30)
+dis_pct.plot(kind='bar', rot=0)
 
 matplotlib.pyplot.show()
+```
+
+
+We could have also categorized New & Experienced as Short Term while Veteran & Established as Long Term and redo the Pivot Table. However, the Pivot Table and plot easily tells us that employees who were with either department 7+ years were more likely to be dissatisfied when they resigned.
+
+While the end result shows us the results (resignation), it does not prove anything about causation of their dissatisfaction. It also does not show anything about possible dissatisfaction in current employees. However, this can be used to start research on current Veteran and Established employees to see if they are dissatsified and why before more resign on bad terms.

@@ -24,7 +24,7 @@ print(dete_survey.info())
    ID         SeparationType Cease Date  ... South Sea Disability NESB  
 0   1  Ill Health Retirement    08/2012  ...       NaN        NaN  Yes  
 
-```
+`
 RangeIndex: 822 entries, 0 to 821  
 Data columns (total 56 columns):  
 ID                                     822 non-null int64  
@@ -85,4 +85,4 @@ Disability                             23 non-null object
 NESB                                   32 non-null object  
 dtypes: bool(18), int64(1), object(37)  
 memory usage: 258.6+ KB  
-```
+`

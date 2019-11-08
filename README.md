@@ -291,19 +291,20 @@ Now that we have our finished new column, we can move on to
 # Part3: Identifying Dissatisfied Employees
 For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the the following are the important ones to identify dissatisfaction:
 
-tafe_survey_updated:
-- Contributing Factors. Dissatisfaction
-- Contributing Factors. Job Dissatisfaction
-dafe_survey_updated:
-- job_dissatisfaction
-- dissatisfaction_with_the_department
-- physical_work_environment
-- lack_of_recognition
-- lack_of_job_security
-- work_location
-- employment_conditions
-- work_life_balance
-- workload
+tafe_survey_updated:  
+- Contributing Factors. Dissatisfaction  
+- Contributing Factors. Job Dissatisfaction  
+
+dafe_survey_updated:  
+- job_dissatisfaction  
+- dissatisfaction_with_the_department  
+- physical_work_environment  
+- lack_of_recognition  
+- lack_of_job_security  
+- work_location  
+- employment_conditions  
+- work_life_balance  
+- workload  
 
 We can use value_counts() on each of these headers to see what values are in them. I've gone ahead and done that. Looks like the results for each column in their respective dataset resulted in the exact same values.  
 
@@ -316,7 +317,7 @@ print(dete_resignations['job_dissatisfaction'].value_counts(dropna=False))
 
 (Note: Actual Dash) -                      277  
 Contributing Factors. Dissatisfaction      55  
-NaN                                         8
+NaN                                         8  
 Name: Contributing Factors. Dissatisfaction, dtype: int64  
 
 

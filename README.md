@@ -286,7 +286,20 @@ print(dete_resignations['institute_service'].head())
 11     3.0  
 Name: institute_service, dtype: float64  
 
-Now that we have our finished new column, we can move on to 
+Now that we have our finished new column, we can move on to the tafe_resignations dataset.
+
+```python
+print(tafe_resignations['institute_service'].value_counts(dropna=False))
+```
+Less than 1 year      73  
+1-2                   64  
+3-4                   63  
+NaN                   50  
+5-6                   33  
+11-20                 26  
+7-10                  21  
+More than 20 years    10  
+Name: institute_service, dtype: int64  
 
 # Part3: Identifying Dissatisfied Employees
 For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the the following are the important ones to identify dissatisfaction:
@@ -366,3 +379,33 @@ True     149
 Name: dissatisfied, dtype: int64  
 
 # Combining the Data
+Before we actually combine the data, we're going to create another column that will signify which previous dataset the original row came from.
+```python
+dete_resignations_up['institute'] = 'DETE'
+tafe_resignations_up['institute'] = 'TAFE'
+```
+
+Now let's combine the datasets in to one called "combined"
+```python
+combined = pandas.concat([dete_resignations_up, tafe_resignations_up], ignore_index=True, sort=True)
+```
+When combing the data, we're going to hae many columns with a lot of empty/null values. We can drop the columns where there not enough values that are "non-null":
+```python
+# optional argument thresh means the column/row needs at least 500 "non-null" for the column not to get dropped.
+combined_updated = combined.dropna(thresh=500, axis=1).copy()
+```
+
+# Categorizing as Short Term or Long Term
+There is no official definition on what constitutes short term vs long term, so we're going to use the following guidelines taken from [this article](https://www.businesswire.com/news/home/20171108006002/en/Age-Number-Engage-Employees-Career-Stage). This article includes some details on how career stages may affect employees needs and thus sattisfaction. This could assist in detailing what changes the departments should consider to improve employee morale. The article breaks down career stages to the following values:  
+
+- New: Less than 3 years in the workplace  
+- Experienced: 3-6 years in the workplace  
+- Established: 7-10 years in the workplace  
+- Veteran: 11 or more years in the workplace  
+
+So we now have a combined database and a column filled with True/False values that confirm whether or not the ex-employee resigned due to some formm of dissatisfaction. So the last step we need to take is to categorize the vlues in 'institute_service' column.  
+
+Let's take a look at that column in the combined dataset:
+```python
+print(dete_resignations_up['dissatisfied'].value_counts(dropna=False))
+```

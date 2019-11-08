@@ -130,7 +130,7 @@ Index(['id', 'Institute', 'WorkArea', 'cease_date', 'separationtype',
 In the beginning of this project, we specified that we wanted to analyze dissatisfaction on employees who retired. Let's see if there's a way to filter by those who resigned.
 
 ```python
-dete_survey_updated['separationtype'].value_counts()
+print(dete_survey_updated['separationtype'].value_counts())
 ```
 Age Retirement                          285  
 Resignation-Other reasons               150  
@@ -146,7 +146,7 @@ Name: separationtype, dtype: int64
 While it's easy to tell which values represent resignation, we do see that there's three different types of resignation. We will have to find a way to make sure we get all three types when filtering.
 
 ```python
-tafe_survey_updated['separationtype'].value_counts()
+print(tafe_survey_updated['separationtype'].value_counts())
 ```
 Resignation                 340  
 Contract Expired            127  
@@ -161,7 +161,7 @@ This dataset is much easier to filter as there just one type of value we need to
 ```python
 dete_survey_updated.loc[dete_survey_updated['separationtype'].str.contains('Resignation'), 'separationtype'] = 'Resignation'
 
-dete_survey_updated['separationtype'].value_counts()
+print(dete_survey_updated['separationtype'].value_counts())
 ```
 Resignation                         311  
 Age Retirement                      285  

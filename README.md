@@ -58,6 +58,7 @@ Index(['ID', 'SeparationType', 'Cease Date', 'DETE Start Date',
        'None of the above', 'Gender', 'Age', 'Aboriginal', 'Torres Strait',  
        'South Sea', 'Disability', 'NESB'],  
       dtype='object')  
+      
 Index(['Record ID', 'Institute', 'WorkArea', 'CESSATION YEAR',  
        'Reason for ceasing employment',  
        'Contributing Factors. Career Move - Public Sector ',  

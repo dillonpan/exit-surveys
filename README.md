@@ -10,7 +10,9 @@ Our main objective is to answer the following questions for both departments:
 - Did employees who worked a for short period of time resign due to some kind of dissatisfaction?  
 - What about employees who have been there longer?
 
-# Note: Please replace [directory] below in the open() function with the link to your folder of choice where autos.csv is located
+# Note: Please replace [directory] below in the open() function with the link to your folder of choice where dete_survey.csv & tafe_survey.csv is located
+
+Note: If you run into an error named UnicodeDecodeError, try the next two most popular encoding types (Latin-1 and Windows-1252) in the open() function. Example: dete_survey = pandas.read_csv('[directory].dete_survey.csv', encoding='Latin-1')
 
 # Opening and Exploring the Data:
 ```python
@@ -18,7 +20,7 @@ import pandas
 import numpy
 
 dete_survey = pandas.read_csv('[directory].dete_survey.csv')
-tafe_survey = pandas.read_csv("tafe_survey.csv")
+tafe_survey = pandas.read_csv('[directory].tafe_survey.csv')
 print(len(dete_survey.columns))
 print(len(tafe_survey.columns))
 ```
@@ -34,7 +36,7 @@ We can see that both CSV files contain a lot of columns, more than we probably n
 There's many steps we need to take to clean the data but we can start with the 'Not Stated' values and getting rid of uneccesary columns.
 ```python
 # Read the file again but overwrite the 'Not Stated' cells with NaN values. Override the dete_survey variable.
-dete_survey = pandas.read_csv('dete_survey.csv', na_values='Not Stated')
+dete_survey = pandas.read_csv('[directory].dete_survey.csv', na_values='Not Stated')
 ```
 
 Let's assume that after looking over the datasets, we know which rows can be removed:

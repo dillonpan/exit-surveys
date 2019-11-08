@@ -131,29 +131,29 @@ In the beginning of this project, we specified that we wanted to analyze dissati
 ```python
 dete_survey_updated['separationtype'].value_counts()
 ```
-Age Retirement                          285
-Resignation-Other reasons               150
-Resignation-Other employer               91
-Resignation-Move overseas/interstate     70
-Voluntary Early Retirement (VER)         67
-Ill Health Retirement                    61
-Other                                    49
-Contract Expired                         34
-Termination                              15
-Name: separationtype, dtype: int64
+Age Retirement                          285  
+Resignation-Other reasons               150  
+Resignation-Other employer               91  
+Resignation-Move overseas/interstate     70  
+Voluntary Early Retirement (VER)         67  
+Ill Health Retirement                    61  
+Other                                    49  
+Contract Expired                         34  
+Termination                              15  
+Name: separationtype, dtype: int64  
 
 While it's easy to tell which values represent resignation, we do see that there's three different types of resignation. We will have to find a way to make sure we get all three types when filtering.
 
 ```python
 tafe_survey_updated['separationtype'].value_counts()
 ```
-Resignation                 340
-Contract Expired            127
-Retrenchment/ Redundancy    104
-Retirement                   82
-Transfer                     25
-Termination                  23
-Name: separationtype, dtype: int64
+Resignation                 340  
+Contract Expired            127  
+Retrenchment/ Redundancy    104  
+Retirement                   82  
+Transfer                     25  
+Termination                  23  
+Name: separationtype, dtype: int64  
 
 This dataset is much easier to filter as there just one type of value we need to worry about, "Resignation". Thus we do not need to do much for the tafe_survey_updated dataset, but lets fix the dete_survey_updated dataset to match it. One way is to filter out those cells with the word "Resignation" in them then replace it with the actual word, "Resignation".
 
@@ -178,5 +178,5 @@ Perfect, all three types of resignation were replaced and consolidated under "Re
 ```python
 dete_resignations = dete_survey_updated[dete_survey_updated['separationtype'] == 'Resignation'].copy()
 tafe_resignations = tafe_survey_updated[tafe_survey_updated['separationtype'] == 'Resignation'].copy()
-'''
+```
 

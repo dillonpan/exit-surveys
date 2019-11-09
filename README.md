@@ -312,14 +312,14 @@ tafe_resignations['institute_service'] = tafe_resignations['institute_service'].
 
 print(tafe_resignations['institute_service'].value_counts(dropna=False))
 ```
-1.0     137
-3.0      63
-NaN      50
-5.0      33
-11.0     26
-7.0      21
-20.0     10
-Name: institute_service, dtype: int64
+1.0     137  
+3.0      63  
+NaN      50  
+5.0      33  
+11.0     26  
+7.0      21  
+20.0     10  
+Name: institute_service, dtype: int64  
 
 # Part3: Identifying Dissatisfied Employees
 For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the the following are the important ones to identify dissatisfaction:

@@ -218,7 +218,7 @@ dete_resignations['cease_date'] = dete_resignations['cease_date'].astype("float"
 Let's run the value count again:
 
 ```python
-dete_resignations['cease_date'].value_counts()
+print(dete_resignations['cease_date'].value_counts())
 ```
 2013.0    146  
 2012.0    129  
@@ -229,7 +229,7 @@ Name: cease_date, dtype: int64
 
 Now that the end date is taken care of, we can look at the start date:
 ```python
-dete_resignations['dete_start_date'].value_counts()
+print(dete_resignations['dete_start_date'].value_counts())
 ```
 2011.0    24  
 2008.0    22  
@@ -464,7 +464,7 @@ Name: dissatisfied, dtype: float64
 
 We could do the above for each the other "service_cat" or we can do it all at once using a Pivot Table. The only issue with uing a Pivot Table is that the values we're using ("dissatisfied") includes NaN/Null values. Pivot tables read boolean values as True=1 and False=0, NaN values would cause an error.
 ```python
-combined_updated['dissatisfied'].value_counts(dropna=False)
+print(combined_updated['dissatisfied'].value_counts(dropna=False))
 ```
 False    403  
 True     240  

@@ -189,7 +189,7 @@ Now that we a two datasets of only resignations, we need to find out how long ea
 
 First off, we'll take a look at the end date:
 ```python
-dete_resignations['cease_date'].value_counts()
+print(dete_resignations['cease_date'].value_counts())
 ```
 2012       126  
 2013        74  

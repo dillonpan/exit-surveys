@@ -211,7 +211,7 @@ Name: cease_date, dtype: int64
 
 So we need to remove the month on some of these dates. Unlike before though, we can't replace all of those values with one thing. The below code only keeps the 2nd half (year) after splitting the date. In this situation, we cannot convert to int easily but we can to float:
 ```python
-dete_resignations['cease_date'] = dete_resignations['cease_date'].str.split('/').str[-1]
+dete_resignations['cease_date'] = dete_resignations['cease_date'].astype(str).str.split('/').str[-1]
 dete_resignations['cease_date'] = dete_resignations['cease_date'].astype("float")
 ```
 

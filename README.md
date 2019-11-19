@@ -2,12 +2,12 @@
 Project using the Python package "pandas" and various functions to combine, clean, and analyze data in multiple CSV files  
 
 # Project Details:
-For this project, we will take a look at employee exit surveys from two departments of the Queensland government in Australia:  
+For this project, we will look at employee exit surveys from two departments of the Queensland government in Australia:  
 - Department of Education, Training and Employment (DETE)  
 - Technical and Further Education (TAFE)  
 
 Our main objective is to answer the following questions for both departments:
-- Did employees who worked a for short period of time resign due to some kind of dissatisfaction?  
+- Did employees who worked a for short period of time resign due to some form of dissatisfaction?  
 - What about employees who have been there longer?
 
 # Note: Please replace [directory] below in the open() function with the link to your folder of choice where dete_survey.csv & tafe_survey.csv is located
@@ -32,8 +32,8 @@ We can see that both CSV files contain a lot of columns, more than we probably n
 2. Each dataframe contains many of the same columns, but the column names are different  
 3. The data has multiple columns/rows areas that signify employee dissatisfaction lead to their resignation, so the datasets are a bit messy
 
-# Identify Missing Values and Drop Unneccessary Columns
-There's many steps we need to take to clean the data but we can start with the 'Not Stated' values and getting rid of uneccesary columns.
+# Identify Missing Values and Drop Unnecessary Columns
+There's many steps we need to take to clean the data but we can start with the 'Not Stated' values and getting rid of unnecessary  columns.
 ```python
 # Read the file again but overwrite the 'Not Stated' cells with NaN values. Override the dete_survey variable.
 dete_survey = pandas.read_csv('[directory].dete_survey.csv', na_values='Not Stated')
@@ -80,9 +80,9 @@ Index(['Record ID', 'Institute', 'WorkArea', 'CESSATION YEAR',
       dtype='object')  
       
  # Rename Columns
-Upon looking over the column headers for both datasets, we need to change some column headers from camelcase to snakecase. Afterwards, we need to get headers for both datasets to match so that we can merge the data later.
+Upon looking over the column headers for both datasets, we need to change some column headers from camelCase to snake case. Afterwards, we need to get headers for both datasets to match so that we can merge the data later.
 
-First off, let's  revise the column headers in dete_survey_updated to snakecase:
+First off, let's  revise the column headers in dete_survey_updated to snake case:
 ```python
 dete_survey_updated.columns = dete_survey_updated.columns.str.lower().str.strip().str.replace(' ', '_')
 print(dete_survey_updated.columns)
@@ -130,7 +130,7 @@ Index(['id', 'Institute', 'WorkArea', 'cease_date', 'separationtype',
 
 # Filter and Clean the Data
 
-# Part1: Seperating Resignations From the Rest
+# Part1: Separating Resignations from the Rest
 In the beginning of this project, we specified that we wanted to analyze dissatisfaction on employees who retired. Let's see if there's a way to filter by those who resigned.
 
 ```python
@@ -160,7 +160,7 @@ Transfer                     25
 Termination                  23  
 Name: separationtype, dtype: int64  
 
-This dataset is much easier to filter as there just one type of value we need to worry about, "Resignation". Thus we do not need to do much for the tafe_survey_updated dataset, but lets fix the dete_survey_updated dataset to match it. One way is to filter out those cells with the word "Resignation" in them then replace it with the actual word, "Resignation".
+This dataset is much easier to filter as there just one type of value we need to worry about, "Resignation". Thus, we do not need to do much for the tafe_survey_updated dataset but let’s fix the dete_survey_updated dataset to match it.  One way is to filter out those cells with the word "Resignation" in them then replace it with the actual word, "Resignation".
 
 ```python
 dete_survey_updated.loc[dete_survey_updated['separationtype'].str.contains('Resignation'), 'separationtype'] = 'Resignation'
@@ -185,9 +185,9 @@ tafe_resignations = tafe_survey_updated[tafe_survey_updated['separationtype'] ==
 
 # Part2: Cleaning Dates and Creating a New Column
 
-Now that we a two datasets of only resignations, we need to find out how long each employee worked before resigning. Afterwards, we can allocated whether they were a short term or long term employee. In tafe_resignations, the column "institute_service" has the amount of time the employee was with the department. However, dete_resignations only includes the employee's start date ("dete_start_date") and their end date ("cease_date"). So let's create a new column that holds the difference.
+Now that we have two datasets of only resignations, we need to find out how long each employee worked before resigning. Afterwards, we can allocate whether they were a short term or long term employee. In tafe_resignations, the column "institute_service" has the amount of time the employee was with the department. However, dete_resignations only includes the employee's start date ("dete_start_date") and their end date ("cease_date"). Let's create a new column that holds the difference.
 
-First off, we'll take a look at the end date:
+First off, we'll look at the end date:
 ```python
 print(dete_resignations['cease_date'].value_counts())
 ```
@@ -209,7 +209,7 @@ print(dete_resignations['cease_date'].value_counts())
 2010         1  
 Name: cease_date, dtype: int64  
 
-So we need to remove the month on some of these dates. Unlike before though, we can't replace all of those values with one thing. The below code only keeps the 2nd half (year) after splitting the date. In this situation, we cannot convert to int easily but we can to float:
+We need to remove the month on some of these dates. Unlike before though, we can't replace all of those values with one thing. The below code only keeps the 2nd half (year) after splitting the date. In this situation, we cannot convert to int easily but we can to float:
 ```python
 dete_resignations['cease_date'] = dete_resignations['cease_date'].astype(str).str.split('/').str[-1]
 dete_resignations['cease_date'] = dete_resignations['cease_date'].astype("float")
@@ -322,7 +322,7 @@ NaN      50
 Name: institute_service, dtype: int64  
 
 # Part3: Identifying Dissatisfied Employees
-For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the the following are the important ones to identify dissatisfaction:
+For both datasets, there's multiple columns with different disstisfaction reasons. The values within those columns are pretty much a yes/no type of response. Looking over all the column headers for both datasets, it looks the following are the important ones to identify dissatisfaction:
 
 tafe_survey_updated:  
 - Contributing Factors. Dissatisfaction  
@@ -360,7 +360,7 @@ Name: job_dissatisfaction, dtype: int64
 
 In job_dissatisfaction, we have a bunch of columns with true/false listed as values. We can go row by row and see if any of the columns listed above contain "True" as a value for that row. As long as one does for that row, it confirms the employee resigned due to some form of dissatisfaction. We can create a new column that contains a final "True" value, or "False" if none of the columns had a "True" value.
 
-We can do the same with tafe_resignations, we just need to first conert the current values to either "True" or "False". Let's go ahead and do that. We can also create the new column ("dissatisfied") and include the final True/False value in it under the same code:
+We can do the same with tafe_resignations, we just need to first convert the current values to either "True" or "False". Let's go ahead and do that. We can also create the new column ("dissatisfied") and include the final True/False value in it under the same code:
 ```python
 def update_vals(x):
     if x == '-':
@@ -406,11 +406,11 @@ dete_resignations_up['institute'] = 'DETE'
 tafe_resignations_up['institute'] = 'TAFE'
 ```
 
-Now let's combine the datasets in to one called "combined"
+Now let's combine the datasets into one called "combined"
 ```python
 combined = pandas.concat([dete_resignations_up, tafe_resignations_up], ignore_index=True, sort=True)
 ```
-When combing the data, we're going to hae many columns with a lot of empty/null values. We can drop the columns where there not enough values that are "non-null":
+When combing the data, we're going to have many columns with a lot of empty/null values. We can drop the columns where there not enough values that are "non-null":
 ```python
 # optional argument thresh means the column/row needs at least 500 "non-null" for the column not to get dropped.
 combined_updated = combined.dropna(thresh=500, axis=1).copy()
@@ -424,9 +424,9 @@ There is no official definition on what constitutes short term vs long term, so 
 - Established: 7-10 years in the workplace  
 - Veteran: 11 or more years in the workplace  
 
-So we now have a combined database, a column filled with True/False values that confirm whether or not the ex-employee resigned due to some formm of dissatisfaction, and a column with an approximation of how long he employee was with the department (in years). 
+So we now have a combined database, a column filled with True/False values that confirm whether or not the ex-employee resigned due to some form of dissatisfaction, and a column with an approximation of how long he employee was with the department (in years). 
 
-Lets take a look at the :
+We can create a function which places the aproximation number under their respective categories:
 ```python
 def transform_service(val):
     if val >= 11:
@@ -462,7 +462,7 @@ True     0.516129
 False    0.483871  
 Name: dissatisfied, dtype: float64  
 
-We could do the above for each the other "service_cat" or we can do it all at once using a Pivot Table. The only issue with uing a Pivot Table is that the values we're using ("dissatisfied") includes NaN/Null values. Pivot tables read boolean values as True=1 and False=0, NaN values would cause an error.
+We could do the above for each the other "service_cat" or we can do it all at once using a Pivot Table. The only issue with using a Pivot Table is that the values we're using ("dissatisfied") includes NaN/Null values. Pivot tables read boolean values as True=1 and False=0, NaN values would cause an error.
 ```python
 print(combined_updated['dissatisfied'].value_counts(dropna=False))
 ```
@@ -501,4 +501,4 @@ matplotlib.pyplot.show()
 
 We could have also categorized New & Experienced as Short Term while Veteran & Established as Long Term and redo the Pivot Table. However, the Pivot Table and plot easily tells us that employees who were with either department 7+ years were more likely to be dissatisfied when they resigned.
 
-While the end result shows us the results (resignation), it does not prove anything about causation of their dissatisfaction. It also does not show anything about possible dissatisfaction in current employees. However, this can be used to start research on current Veteran and Established employees to see if they are dissatsified and why before more resign on bad terms.
+While the end result shows us the results (resignation), it does not prove anything about causation of their dissatisfaction. It also does not show anything about possible dissatisfaction in current employees. However, this can be used to start research on current Veteran and Established employees to see if they are dissatisfied before more resign on bad terms.
